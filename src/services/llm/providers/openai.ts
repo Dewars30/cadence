@@ -59,6 +59,7 @@ export class OpenAILLMProvider implements LLMProvider {
       if (strictCompatible) {
         const completion = await this.client.chat.completions.create({
           model: this.model,
+          temperature: 0,
           messages: [
             {
               role: "developer",
@@ -119,6 +120,7 @@ export class OpenAILLMProvider implements LLMProvider {
 
       const completion = await this.client.chat.completions.create({
         model: this.model,
+        temperature: 0,
         messages: baseMessages,
         response_format: { type: "json_object" },
       });
@@ -139,7 +141,7 @@ export class OpenAILLMProvider implements LLMProvider {
           role: "user" as const,
           content: [
             "Validation errors:",
-            JSON.stringify(validation.errors),
+            validation.errors.join("\n"),
             "",
             "Bad JSON:",
             raw,
@@ -149,6 +151,7 @@ export class OpenAILLMProvider implements LLMProvider {
 
       const retry = await this.client.chat.completions.create({
         model: this.model,
+        temperature: 0,
         messages: retryMessages,
         response_format: { type: "json_object" },
       });
