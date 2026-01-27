@@ -21,7 +21,13 @@ async function assertArtifactIR(outputJson: string) {
 }
 
 describe("LLM provider ArtifactIR contract (optional)", () => {
+  const runContracts = readEnv("RUN_LLM_CONTRACTS")?.toLowerCase() === "true";
   const anthropicKey = readEnv("ANTHROPIC_API_KEY");
+
+  if (!runContracts) {
+    it.skip("LLM contract tests are disabled (set RUN_LLM_CONTRACTS=true to run)", () => {});
+    return;
+  }
   // Canonical schema remains unchanged; OpenAI requires a schema adapter (next PR).
   it.skip(
     "OpenAI strict Structured Outputs rejects ArtifactIR schema (\"oneOf\" is not permitted). TODO: add OpenAI schema adapter.",
@@ -42,13 +48,22 @@ describe("LLM provider ArtifactIR contract (optional)", () => {
   } else {
     it("Anthropic provider returns valid ArtifactIR", async () => {
       const provider = new AnthropicLLMProvider();
-      const output = await provider.generate({
-        phase: "Production",
-        prompt: "Generate a short ArtifactIR report.",
-        context,
-        history: [],
-      });
-      await assertArtifactIR(output.output_json);
+      try {
+        const output = await provider.generate({
+          phase: "Production",
+          prompt: "Generate a short ArtifactIR report.",
+          context,
+          history: [],
+        });
+        await assertArtifactIR(output.output_json);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        if (message.toLowerCase().includes("credit") || message.toLowerCase().includes("payment_required")) {
+          console.warn(`[Cadence] Skipping Anthropic contract test due to billing: ${message}`);
+          return;
+        }
+        throw err;
+      }
     });
   }
 });
