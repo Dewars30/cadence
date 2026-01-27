@@ -6,7 +6,7 @@ import { useCadenceStore } from "./state/useCadenceStore";
 
 function App() {
   const init = useCadenceStore((s) => s.init);
-  const initializing = useCadenceStore((s) => s.initializing);
+  const initialized = useCadenceStore((s) => s.initialized);
   const error = useCadenceStore((s) => s.error);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ function App() {
       <header className="cadence-header">
         <div className="cadence-header__title">Cadence MVP</div>
         <div className="cadence-header__status">
-          {initializing ? "Initializing…" : error ? "Error" : "Ready"}
+          {error ? "Error" : initialized ? "Ready" : "Initializing…"}
         </div>
       </header>
       {error ? (
