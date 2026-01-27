@@ -3,7 +3,8 @@ import { useCadenceStore } from "../state/useCadenceStore";
 import { listVersions, createVersion, lockVersion } from "../services/versionService";
 import { setCurrentVersion } from "../services/artifactService";
 import { exportArtifactVersionToDocx } from "../services/exportService";
-import { validateOrRepairArtifactIR, MockArtifactIRRepairProvider } from "../services/artifactIRService";
+import { validateOrRepairArtifactIR } from "../services/artifactIRService";
+import { createProviderBundle } from "../services/llm/registry";
 
 export function NodeInspector() {
   const nodes = useCadenceStore((s) => s.nodes);
@@ -128,7 +129,7 @@ export function NodeInspector() {
             <button
               onClick={async () => {
                 const latest = runSteps[runSteps.length - 1]?.output_json ?? "{}";
-                const repairProvider = new MockArtifactIRRepairProvider();
+                const repairProvider = createProviderBundle().repair;
                 const { ir } = await validateOrRepairArtifactIR(latest, repairProvider);
                 const version = await createVersion(node.ref_id!, JSON.stringify(ir), nextLabel, "checkpoint");
                 await setCurrentVersion(node.ref_id!, version.id);

@@ -1,63 +1,23 @@
-import type { WorkflowPhase } from "../domain/phase";
-import type { RunContext } from "./contextBuilder";
+// Back-compat facade: keep imports stable across the codebase.
+// Existing code imports MockLLMProvider from here. Keep that working.
 
-export type LLMRequest = {
-  phase: WorkflowPhase;
+import type { RunContext } from "./contextBuilder";
+import type { RunStep } from "../domain/types";
+
+export type GenerateRequest = {
+  phase: string;
   prompt: string;
   context: RunContext;
-  history: Array<{ phase: WorkflowPhase; output_json: string }>;
+  history: RunStep[];
 };
 
-export type LLMResult = {
-  phase: WorkflowPhase;
+export type LLMResponse = {
   output_json: string;
 };
 
 export interface LLMProvider {
-  generate(request: LLMRequest): Promise<LLMResult>;
+  generate(req: GenerateRequest): Promise<LLMResponse>;
 }
 
-export class MockLLMProvider implements LLMProvider {
-  async generate(request: LLMRequest): Promise<LLMResult> {
-    if (request.phase === "Production" || request.phase === "Finalization") {
-      const ir = {
-        artifact: {
-          id: "art_mock",
-          type: "report",
-          title: `${request.context.project.name} Report`,
-          template: "consulting_report_v1",
-        },
-        blocks: [
-          { type: "titlePage", title: `${request.context.project.name} Report`, subtitle: "V1 Draft" },
-          { type: "heading", level: 1, text: "Executive Summary" },
-          { type: "paragraph", text: "Cadence compiles structured artifacts into polished DOCX output." },
-          { type: "bullets", items: ["Spatial canvas context", "Deterministic workflow", "DOCX export"] },
-          {
-            type: "table",
-            columns: ["Metric", "Target"],
-            rows: [
-              ["Time-to-export", "<10 min"],
-              ["Export success", ">95%"],
-            ],
-          },
-        ],
-      };
-      return { phase: request.phase, output_json: JSON.stringify(ir, null, 2) };
-    }
-
-    const base = {
-      phase: request.phase,
-      prompt: request.prompt,
-      project: request.context.project.name,
-      timestamp: new Date().toISOString(),
-    };
-
-    const output = {
-      ...base,
-      summary: `${request.phase} summary for ${request.context.project.name}`,
-      notes: request.context.project.readme ? "Readme included." : "No readme provided.",
-    };
-
-    return { phase: request.phase, output_json: JSON.stringify(output, null, 2) };
-  }
-}
+// Re-export the mock provider from its new home.
+export { MockLLMProvider } from "./llm/providers/mock";
