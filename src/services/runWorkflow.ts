@@ -62,7 +62,7 @@ export async function advanceRun(params: RunAdvanceParams) {
     conversationIds: params.conversationIds,
   });
   const steps = await listRunSteps(run.id);
-  const history = steps.map((step) => ({ phase: step.phase as WorkflowPhase, output_json: step.output_json }));
+  const history = steps;
   const output = await params.provider.generate({
     phase: next,
     prompt: params.prompt,

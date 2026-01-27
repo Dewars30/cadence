@@ -5,6 +5,9 @@ export type ArtifactIRRepairRequest = {
   errors: string[];
 };
 
+// Back-compat alias used by PR2 provider templates.
+export type RepairRequest = ArtifactIRRepairRequest;
+
 export interface ArtifactIRRepairProvider {
   repair(request: ArtifactIRRepairRequest): Promise<string>;
 }
