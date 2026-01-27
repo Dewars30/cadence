@@ -7,7 +7,7 @@ import { createBuild } from "./buildService";
 import { getDbPath } from "./db";
 import { getProject } from "./projectService";
 import { validateOrRepairArtifactIR } from "./artifactIRService";
-import { createProviderBundle } from "./llm/registry";
+import { getProviderBundle } from "./llm/registry";
 
 export async function exportArtifactVersionToDocx(params: {
   artifactVersionId: string;
@@ -16,7 +16,7 @@ export async function exportArtifactVersionToDocx(params: {
   const version = await getVersion(params.artifactVersionId);
   if (!version) throw new Error("Artifact version not found.");
 
-  const repairProvider = createProviderBundle().repair;
+  const repairProvider = getProviderBundle().repair;
   const { ir } = await validateOrRepairArtifactIR(version.content_json, repairProvider);
   const docx = await compileArtifactToDocx(ir);
 

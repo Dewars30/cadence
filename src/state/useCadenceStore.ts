@@ -11,7 +11,7 @@ import {
 import type { CanvasNode, Project, Workspace, Run, RunStep } from "../domain/types";
 import { createConversation } from "../services/conversationService";
 import { createArtifact } from "../services/artifactService";
-import { createProviderBundle } from "../services/llm/registry";
+import { getProviderBundle } from "../services/llm/registry";
 import { advanceRun, pauseRun, startRun } from "../services/runWorkflow";
 import { listRunSteps } from "../services/runService";
 
@@ -143,7 +143,7 @@ export const useCadenceStore = create<CadenceState>((set, get) => ({
       set({ runError: "Select an Artifact node to start a run." });
       return;
     }
-    const provider = createProviderBundle().llm;
+    const provider = getProviderBundle().llm;
     const run = await startRun({
       projectId: project.id,
       prompt,
@@ -156,7 +156,7 @@ export const useCadenceStore = create<CadenceState>((set, get) => ({
   advanceRun: async (prompt: string) => {
     const run = get().currentRun;
     if (!run) return;
-    const provider = createProviderBundle().llm;
+    const provider = getProviderBundle().llm;
     const updated = await advanceRun({ runId: run.id, prompt, provider });
     const steps = await listRunSteps(run.id);
     set({ currentRun: updated, runSteps: steps });

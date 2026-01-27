@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import type { LLMProvider, GenerateRequest } from "../../llmProvider";
 import { requireEnv, readEnvWithDefault } from "../../env";
 import artifactIRSchema from "../../../domain/artifactIR.schema.json";
+import { assertOpenAIStrictSchemaCompatible } from "./openaiSchema";
 
 type ChatCompletionLike = {
   choices?: Array<{ message?: { content?: string | null } }>;
@@ -28,6 +29,7 @@ export class OpenAILLMProvider implements LLMProvider {
     const mustBeArtifactIR = req.phase === "Production" || req.phase === "Finalization";
 
     if (mustBeArtifactIR) {
+      assertOpenAIStrictSchemaCompatible(artifactIRSchema);
       const completion = await this.client.chat.completions.create({
         model: this.model,
         messages: [
