@@ -1,0 +1,222 @@
+:root {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #101828;
+  background-color: #f5f7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body,
+#root {
+  margin: 0;
+  height: 100vh;
+}
+
+.cadence-app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f5f7fb;
+}
+
+.cadence-header {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e4e7ec;
+}
+
+.cadence-header__title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.cadence-header__status {
+  font-size: 12px;
+  color: #667085;
+}
+
+.cadence-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 0;
+  min-height: 0;
+}
+
+.cadence-canvas {
+  position: relative;
+  height: 100%;
+}
+
+.cadence-canvas__toolbar {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.cadence-panel {
+  background: #ffffff;
+  border-left: 1px solid #e4e7ec;
+  padding: 16px;
+  overflow: auto;
+}
+
+.cadence-panel h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.cadence-panel__section {
+  margin-bottom: 16px;
+}
+
+.cadence-panel__section h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #475467;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cadence-meta {
+  display: grid;
+  gap: 8px;
+}
+
+.cadence-meta div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  color: #667085;
+}
+
+.cadence-meta strong {
+  color: #101828;
+  font-weight: 600;
+}
+
+.cadence-panel__actions button {
+  width: 100%;
+}
+.cadence-versions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.cadence-versions li {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border: 1px solid #e4e7ec;
+  border-radius: 6px;
+}
+
+.cadence-textarea {
+  width: 100%;
+  min-height: 80px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.cadence-run {
+  margin-top: 12px;
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.cadence-run pre {
+  white-space: pre-wrap;
+  max-height: 160px;
+  overflow: auto;
+  background: #f8fafc;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.cadence-muted {
+  color: #98a2b3;
+  font-size: 13px;
+}
+
+.cadence-error {
+  padding: 24px;
+  color: #b42318;
+}
+
+button {
+  border: 1px solid #d0d5dd;
+  background: #ffffff;
+  color: #101828;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #f2f4f7;
+}
+
+button.danger {
+  border-color: #fda29b;
+  color: #b42318;
+}
+
+.cadence-shape {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #101828;
+  background: #ffffff;
+  border: 1px solid #d0d5dd;
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+}
+
+.cadence-shape__title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #667085;
+}
+
+.cadence-shape__body {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.cadence-chat {
+  border-color: #b2ddff;
+  background: #f5fbff;
+}
+
+.cadence-artifact {
+  border-color: #ffd6ae;
+  background: #fffaf3;
+}
+
+.cadence-scratchpad {
+  border-color: #d6f4a3;
+  background: #faffef;
+}

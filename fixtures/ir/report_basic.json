@@ -1,0 +1,14 @@
+{
+  "artifact": {
+    "id": "art_basic",
+    "type": "report",
+    "title": "Cadence Report",
+    "template": "consulting_report_v1"
+  },
+  "blocks": [
+    { "type": "titlePage", "title": "Cadence Report", "subtitle": "V1" },
+    { "type": "heading", "level": 1, "text": "Executive Summary" },
+    { "type": "paragraph", "text": "Cadence compiles structured artifacts into DOCX." },
+    { "type": "bullets", "items": ["Context", "Workflow", "Export"] }
+  ]
+}

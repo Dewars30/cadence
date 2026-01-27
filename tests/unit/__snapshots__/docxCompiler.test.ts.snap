@@ -1,0 +1,5 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DOCX compiler > produces deterministic bytes for basic report 1`] = `"8c215957b9242ebc61ff9d035d97c7493cc5ced01fbb738d135f4db07d2f7521"`;
+
+exports[`DOCX compiler > produces deterministic bytes for table-heavy report 1`] = `"7dd154979c8befa3ca144cbdb2d16bd4326f9e6faa60008e394718a74d09dc61"`;

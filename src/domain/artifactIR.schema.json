@@ -1,0 +1,136 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cadence ArtifactIR",
+  "type": "object",
+  "required": ["artifact", "blocks"],
+  "properties": {
+    "artifact": {
+      "type": "object",
+      "required": ["id", "type", "title", "template"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["report", "prd", "deck", "memo", "custom"]
+        },
+        "title": { "type": "string" },
+        "template": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "blocks": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/block" }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "path"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string" },
+          "path": { "type": "string" },
+          "alt": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "styles": {
+      "type": "object"
+    }
+  },
+  "definitions": {
+    "block": {
+      "oneOf": [
+        { "$ref": "#/definitions/titlePage" },
+        { "$ref": "#/definitions/heading" },
+        { "$ref": "#/definitions/paragraph" },
+        { "$ref": "#/definitions/bullets" },
+        { "$ref": "#/definitions/numbered" },
+        { "$ref": "#/definitions/table" },
+        { "$ref": "#/definitions/pageBreak" }
+      ]
+    },
+    "titlePage": {
+      "type": "object",
+      "required": ["type", "title"],
+      "properties": {
+        "type": { "const": "titlePage" },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "heading": {
+      "type": "object",
+      "required": ["type", "level", "text"],
+      "properties": {
+        "type": { "const": "heading" },
+        "level": { "type": "integer", "minimum": 1, "maximum": 6 },
+        "text": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "paragraph": {
+      "type": "object",
+      "required": ["type", "text"],
+      "properties": {
+        "type": { "const": "paragraph" },
+        "text": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "bullets": {
+      "type": "object",
+      "required": ["type", "items"],
+      "properties": {
+        "type": { "const": "bullets" },
+        "items": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "numbered": {
+      "type": "object",
+      "required": ["type", "items"],
+      "properties": {
+        "type": { "const": "numbered" },
+        "items": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "table": {
+      "type": "object",
+      "required": ["type", "columns", "rows"],
+      "properties": {
+        "type": { "const": "table" },
+        "columns": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "pageBreak": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "pageBreak" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "artifact": {
+    "id": "art_toc",
+    "type": "report",
+    "title": "Cadence Long TOC",
+    "template": "consulting_report_v1"
+  },
+  "blocks": [
+    { "type": "titlePage", "title": "Cadence Long TOC", "subtitle": "Expanded" },
+    { "type": "heading", "level": 1, "text": "Section 1" },
+    { "type": "paragraph", "text": "Content 1" },
+    { "type": "heading", "level": 1, "text": "Section 2" },
+    { "type": "paragraph", "text": "Content 2" },
+    { "type": "heading", "level": 1, "text": "Section 3" },
+    { "type": "paragraph", "text": "Content 3" },
+    { "type": "heading", "level": 1, "text": "Section 4" },
+    { "type": "paragraph", "text": "Content 4" }
+  ]
+}

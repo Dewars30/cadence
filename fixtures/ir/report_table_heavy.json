@@ -1,0 +1,21 @@
+{
+  "artifact": {
+    "id": "art_table",
+    "type": "report",
+    "title": "Cadence Metrics",
+    "template": "consulting_report_v1"
+  },
+  "blocks": [
+    { "type": "titlePage", "title": "Cadence Metrics", "subtitle": "Table Heavy" },
+    { "type": "heading", "level": 1, "text": "Metrics" },
+    {
+      "type": "table",
+      "columns": ["Metric", "Target", "Status"],
+      "rows": [
+        ["Time-to-export", "<10 min", "On track"],
+        ["Export success", ">95%", "On track"],
+        ["Offline mode", "Yes", "Complete"]
+      ]
+    }
+  ]
+}
