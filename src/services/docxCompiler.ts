@@ -12,12 +12,42 @@ import {
   TextRun,
   LevelFormat,
 } from "docx";
+import JSZip from "jszip";
 import type { ArtifactIR, ArtifactBlock } from "../domain/artifactIR";
 
 export type DocxCompileResult = {
   document: Document;
   bytes: Uint8Array;
 };
+const FIXED_DOCX_TIMESTAMP = "2000-01-01T00:00:00.000Z";
+const FIXED_DOCX_DATE = new Date(FIXED_DOCX_TIMESTAMP);
+
+function normalizeCoreXml(coreXml: string): string {
+  const tags = ["dcterms:created", "dcterms:modified", "cp:lastPrinted"];
+  return tags.reduce((xml, tag) => {
+    const tagPattern = new RegExp(`<${tag}[^>]*>[^<]*</${tag}>`, "g");
+    return xml.replace(tagPattern, (match) => {
+      const openTag = match.match(new RegExp(`<${tag}[^>]*>`))?.[0] ?? `<${tag}>`;
+      return `${openTag}${FIXED_DOCX_TIMESTAMP}</${tag}>`;
+    });
+  }, coreXml);
+}
+
+async function normalizeDocxBytes(bytes: Uint8Array): Promise<Uint8Array> {
+  const zip = await JSZip.loadAsync(bytes);
+  const coreXmlEntry = zip.file("docProps/core.xml");
+  if (coreXmlEntry) {
+    const coreXml = await coreXmlEntry.async("string");
+    const normalizedCoreXml = normalizeCoreXml(coreXml);
+    zip.file("docProps/core.xml", normalizedCoreXml);
+  }
+
+  Object.values(zip.files).forEach((file) => {
+    file.date = FIXED_DOCX_DATE;
+  });
+
+  return zip.generateAsync({ type: "uint8array", date: FIXED_DOCX_DATE });
+}
 
 const numberingConfig = {
   config: [
@@ -146,9 +176,11 @@ export async function compileArtifactToDocx(ir: ArtifactIR): Promise<DocxCompile
 
   if (typeof Blob === "undefined") {
     const buffer = await Packer.toBuffer(document);
-    return { document, bytes: new Uint8Array(buffer) };
+    const normalizedBytes = await normalizeDocxBytes(new Uint8Array(buffer));
+    return { document, bytes: normalizedBytes };
   }
   const blob = await Packer.toBlob(document);
   const buffer = await blob.arrayBuffer();
-  return { document, bytes: new Uint8Array(buffer) };
+  const normalizedBytes = await normalizeDocxBytes(new Uint8Array(buffer));
+  return { document, bytes: normalizedBytes };
 }

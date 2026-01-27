@@ -16,7 +16,7 @@ class MemoryDb implements DbLike {
   }
 
   async execute(sql: string, params: unknown[] = []) {
-    const insertMatch = sql.match(/INSERT INTO (\\w+) \\(([^)]+)\\)/i);
+    const insertMatch = sql.match(/INSERT INTO (\w+) \(([^)]+)\)/i);
     if (insertMatch) {
       const table = insertMatch[1];
       const columns = insertMatch[2].split(",").map((c) => c.trim());
@@ -28,7 +28,7 @@ class MemoryDb implements DbLike {
       return;
     }
 
-    const updateMatch = sql.match(/UPDATE (\\w+) SET (.+) WHERE (\\w+) = \\?/i);
+    const updateMatch = sql.match(/UPDATE (\w+) SET (.+) WHERE (\w+) = \?/i);
     if (updateMatch) {
       const table = updateMatch[1];
       const setClause = updateMatch[2];
@@ -47,7 +47,7 @@ class MemoryDb implements DbLike {
       return;
     }
 
-    const deleteMatch = sql.match(/DELETE FROM (\\w+) WHERE (\\w+) = \\?/i);
+    const deleteMatch = sql.match(/DELETE FROM (\w+) WHERE (\w+) = \?/i);
     if (deleteMatch) {
       const table = deleteMatch[1];
       const whereCol = deleteMatch[2];
@@ -61,7 +61,7 @@ class MemoryDb implements DbLike {
   }
 
   async select<T>(sql: string, params: unknown[] = []) {
-    const selectMatch = sql.match(/SELECT \\* FROM (\\w+)(?: WHERE (\\w+) = \\?)?(?: ORDER BY (\\w+) (ASC|DESC))?/i);
+    const selectMatch = sql.match(/SELECT \* FROM (\w+)(?: WHERE (\w+) = \?)?(?: ORDER BY (\w+) (ASC|DESC))?/i);
     if (!selectMatch) return [] as T;
     const table = selectMatch[1];
     const whereCol = selectMatch[2];

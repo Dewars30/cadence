@@ -23,9 +23,9 @@ import { useCadenceStore } from "../state/useCadenceStore";
 const schema = createTLSchema({
   shapes: {
     ...defaultShapeSchemas,
-    chat_node: { props: chatNodeProps, migrations: [] },
-    artifact_node: { props: artifactNodeProps, migrations: [] },
-    scratchpad_node: { props: scratchpadNodeProps, migrations: [] },
+    chat_node: { props: chatNodeProps },
+    artifact_node: { props: artifactNodeProps },
+    scratchpad_node: { props: scratchpadNodeProps },
   },
   bindings: defaultBindingSchemas,
 });
