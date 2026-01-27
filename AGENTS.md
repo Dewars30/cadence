@@ -7,6 +7,7 @@ These rules are **repo law**. If any instruction conflicts with these rules, **f
 2. **Deterministic workflow:** Understanding → Requirements → Scaffolding → Production → Finalization.
    - Phases must remain stable and predictable.
 3. **Reproducible exports:** A saved run + inputs must reproduce the same export (within deterministic constraints).
+   - DOCX exports must be byte-for-byte deterministic given identical ArtifactIR, template, and compiler version.
 4. **No scope creep in MVP:** No cloud sync. No PPTX/XLSX. No plugins/marketplace.
 
 ## Engineering invariants
