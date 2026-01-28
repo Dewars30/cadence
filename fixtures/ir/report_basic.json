@@ -6,9 +6,9 @@
     "template": "consulting_report_v1"
   },
   "blocks": [
-    { "type": "titlePage", "title": "Cadence Report", "subtitle": "V1" },
-    { "type": "heading", "level": 1, "text": "Executive Summary" },
-    { "type": "paragraph", "text": "Cadence compiles structured artifacts into DOCX." },
-    { "type": "bullets", "items": ["Context", "Workflow", "Export"] }
+    { "id": "block_001", "type": "titlePage", "title": "Cadence Report", "subtitle": "V1" },
+    { "id": "block_002", "type": "heading", "level": 1, "text": "Executive Summary" },
+    { "id": "block_003", "type": "paragraph", "text": "Cadence compiles structured artifacts into DOCX." },
+    { "id": "block_004", "type": "bullets", "items": ["Context", "Workflow", "Export"] }
   ]
 }

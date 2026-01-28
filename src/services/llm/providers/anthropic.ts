@@ -27,7 +27,27 @@ export class AnthropicLLMProvider implements LLMProvider {
   }
 
   async generate(req: GenerateRequest) {
+    const isRevision = req.phase === "Revision";
     const mustBeArtifactIR = req.phase === "Production" || req.phase === "Finalization";
+
+    if (isRevision) {
+      const msg = await this.client.messages.create({
+        model: this.model,
+        max_tokens: 2048,
+        system:
+          "You generate IR patches for Cadence. Output ONLY valid JSON with shape: { patches: IRPatch[] }. No prose. No markdown.",
+        messages: [
+          {
+            role: "user",
+            content: [req.prompt].join("\n"),
+          },
+        ],
+      });
+
+      const text = extractText(msg).trim();
+      if (!text) throw new Error("Anthropic: empty text response");
+      return { output_json: text };
+    }
 
     if (mustBeArtifactIR) {
       const toolName = "emit_artifact_ir";

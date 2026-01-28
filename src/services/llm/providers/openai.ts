@@ -39,8 +39,30 @@ export class OpenAILLMProvider implements LLMProvider {
   }
 
   async generate(req: GenerateRequest) {
+    const isRevision = req.phase === "Revision";
     // For now: only enforce strict schema for phases that must output ArtifactIR.
     const mustBeArtifactIR = req.phase === "Production" || req.phase === "Finalization";
+
+    if (isRevision) {
+      const completion = await this.client.chat.completions.create({
+        model: this.model,
+        temperature: 0,
+        messages: [
+          {
+            role: "developer",
+            content:
+              "You generate IR patches for Cadence. Output ONLY valid JSON with shape: { patches: IRPatch[] }. No prose. No markdown.",
+          },
+          {
+            role: "user",
+            content: [req.prompt].join("\n"),
+          },
+        ],
+        response_format: { type: "json_object" },
+      });
+
+      return { output_json: extractContent(completion) };
+    }
 
     if (mustBeArtifactIR) {
       let strictCompatible = true;

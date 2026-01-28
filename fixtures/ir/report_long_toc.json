@@ -6,14 +6,14 @@
     "template": "consulting_report_v1"
   },
   "blocks": [
-    { "type": "titlePage", "title": "Cadence Long TOC", "subtitle": "Expanded" },
-    { "type": "heading", "level": 1, "text": "Section 1" },
-    { "type": "paragraph", "text": "Content 1" },
-    { "type": "heading", "level": 1, "text": "Section 2" },
-    { "type": "paragraph", "text": "Content 2" },
-    { "type": "heading", "level": 1, "text": "Section 3" },
-    { "type": "paragraph", "text": "Content 3" },
-    { "type": "heading", "level": 1, "text": "Section 4" },
-    { "type": "paragraph", "text": "Content 4" }
+    { "id": "block_001", "type": "titlePage", "title": "Cadence Long TOC", "subtitle": "Expanded" },
+    { "id": "block_002", "type": "heading", "level": 1, "text": "Section 1" },
+    { "id": "block_003", "type": "paragraph", "text": "Content 1" },
+    { "id": "block_004", "type": "heading", "level": 1, "text": "Section 2" },
+    { "id": "block_005", "type": "paragraph", "text": "Content 2" },
+    { "id": "block_006", "type": "heading", "level": 1, "text": "Section 3" },
+    { "id": "block_007", "type": "paragraph", "text": "Content 3" },
+    { "id": "block_008", "type": "heading", "level": 1, "text": "Section 4" },
+    { "id": "block_009", "type": "paragraph", "text": "Content 4" }
   ]
 }

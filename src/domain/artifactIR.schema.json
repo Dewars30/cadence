@@ -54,8 +54,9 @@
     },
     "titlePage": {
       "type": "object",
-      "required": ["type", "title"],
+      "required": ["id", "type", "title"],
       "properties": {
+        "id": { "type": "string" },
         "type": { "const": "titlePage" },
         "title": { "type": "string" },
         "subtitle": { "type": "string" }
@@ -64,8 +65,9 @@
     },
     "heading": {
       "type": "object",
-      "required": ["type", "level", "text"],
+      "required": ["id", "type", "level", "text"],
       "properties": {
+        "id": { "type": "string" },
         "type": { "const": "heading" },
         "level": { "type": "integer", "minimum": 1, "maximum": 6 },
         "text": { "type": "string" }
@@ -74,8 +76,9 @@
     },
     "paragraph": {
       "type": "object",
-      "required": ["type", "text"],
+      "required": ["id", "type", "text"],
       "properties": {
+        "id": { "type": "string" },
         "type": { "const": "paragraph" },
         "text": { "type": "string" }
       },
@@ -83,8 +86,9 @@
     },
     "bullets": {
       "type": "object",
-      "required": ["type", "items"],
+      "required": ["id", "type", "items"],
       "properties": {
+        "id": { "type": "string" },
         "type": { "const": "bullets" },
         "items": {
           "type": "array",
@@ -95,8 +99,9 @@
     },
     "numbered": {
       "type": "object",
-      "required": ["type", "items"],
+      "required": ["id", "type", "items"],
       "properties": {
+        "id": { "type": "string" },
         "type": { "const": "numbered" },
         "items": {
           "type": "array",
@@ -107,8 +112,9 @@
     },
     "table": {
       "type": "object",
-      "required": ["type", "columns", "rows"],
+      "required": ["id", "type", "columns", "rows"],
       "properties": {
+        "id": { "type": "string" },
         "type": { "const": "table" },
         "columns": {
           "type": "array",
@@ -126,8 +132,9 @@
     },
     "pageBreak": {
       "type": "object",
-      "required": ["type"],
+      "required": ["id", "type"],
       "properties": {
+        "id": { "type": "string" },
         "type": { "const": "pageBreak" }
       },
       "additionalProperties": false
