@@ -10,6 +10,7 @@ These rules are **repo law**. If any instruction conflicts with these rules, **f
    - DOCX exports must be byte-for-byte deterministic given identical ArtifactIR, template, and compiler version.
 4. **No scope creep in MVP:** No cloud sync. No PPTX/XLSX. No plugins/marketplace.
 5. **Stable IR IDs:** Existing block/section IDs MUST remain stable across all patch operations; IDs only change on creation/deletion.
+6. Provenance export is deterministic: createdAt = first record timestamp or 2000-01-01T00:00:00.000Z; log capped at 200; schemaVersion=1 wrapper.
 
 ## Engineering invariants
 1. Prefer **small PRs** (<= 400 LOC net change unless approved).
