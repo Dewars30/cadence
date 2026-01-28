@@ -3,6 +3,13 @@ import { buildRunContext } from "./contextBuilder";
 import type { LLMProvider } from "./llmProvider";
 import { addRunStep, createRun, getRun, listRunSteps, setRunStatus, updateRunPhase } from "./runService";
 import { reviseWithPatches } from "./workflow/phases/reviseWithPatches";
+import type { IRTarget } from "../domain/irPatch";
+import type { ArtifactIR } from "../domain/artifactIR";
+import type { ArtifactIRRepairProvider } from "./artifactIRService";
+import type { RevisionProvider, RevisionRecord } from "../domain/revisionLog";
+import { parseRegenTokens } from "./revision/regenTokens";
+import { appendRevisionRecord, computeIRHash } from "./revision/provenance";
+import { nowIso } from "./utils";
 
 type RunStartParams = {
   projectId: string;
@@ -87,6 +94,82 @@ export async function pauseRun(runId: string) {
   return { ...run, status: "paused" };
 }
 
-export async function reviseArtifactWithPatches(params: Parameters<typeof reviseWithPatches>[0]) {
-  return reviseWithPatches(params);
+type ReviseArtifactParams = {
+  projectId: string;
+  ir: ArtifactIR;
+  instruction: string;
+  target: IRTarget;
+  provider: LLMProvider;
+  repairProvider: ArtifactIRRepairProvider;
+  providerName: RevisionProvider;
+  providerModel?: string | null;
+};
+
+function truncateInstruction(instruction: string, max = 500) {
+  if (instruction.length <= max) return instruction;
+  return instruction.slice(0, max);
+}
+
+function getProviderModel(provider: LLMProvider, fallback?: string | null) {
+  if (fallback) return fallback;
+  const candidate = (provider as { model?: string }).model;
+  return typeof candidate === "string" ? candidate : null;
+}
+
+export async function reviseArtifactWithPatches(params: ReviseArtifactParams) {
+  const { mode, sanitizedInstruction, warnings } = parseRegenTokens(params.instruction);
+  warnings.forEach((warning) => console.warn(`[Cadence] ${warning}`));
+
+  const irHashBefore = await computeIRHash(params.ir);
+  const instruction = sanitizedInstruction;
+  const revisionId = globalThis.crypto?.randomUUID?.() ?? `rev_${Date.now()}`;
+  const timestamp = nowIso();
+  const providerModel = getProviderModel(params.provider, params.providerModel ?? null);
+
+  let record: RevisionRecord | null = null;
+  try {
+    const result = await reviseWithPatches({
+      ir: params.ir,
+      instruction,
+      target: params.target,
+      provider: params.provider,
+      repairProvider: params.repairProvider,
+      revisionMode: mode,
+    });
+    const irHashAfter = await computeIRHash(result.ir);
+    const validation = result.repaired || result.outlineRepaired ? "repaired" : "passed";
+    record = {
+      revisionId,
+      timestamp,
+      mode,
+      target: mode === "patch" ? params.target : "artifact",
+      instruction: truncateInstruction(instruction),
+      provider: params.providerName,
+      model: providerModel,
+      patchCount: result.patches.length,
+      validation,
+      irHashBefore,
+      irHashAfter,
+    };
+    await appendRevisionRecord(params.projectId, record);
+    return result;
+  } catch (err) {
+    const error = err instanceof Error ? err.message : "Revision failed.";
+    record = {
+      revisionId,
+      timestamp,
+      mode,
+      target: mode === "patch" ? params.target : "artifact",
+      instruction: truncateInstruction(instruction),
+      provider: params.providerName,
+      model: providerModel,
+      patchCount: 0,
+      validation: "failed",
+      errors: [error],
+      irHashBefore,
+      irHashAfter: irHashBefore,
+    };
+    await appendRevisionRecord(params.projectId, record);
+    throw err;
+  }
 }

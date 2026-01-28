@@ -8,6 +8,8 @@ import { getDbPath } from "./db";
 import { getProject } from "./projectService";
 import { validateOrRepairArtifactIR } from "./artifactIRService";
 import { getProviderBundle } from "./llm/registry";
+import { getRevisionLog } from "./revision/provenance";
+import { nowIso } from "./utils";
 
 export async function exportArtifactVersionToDocx(params: {
   artifactVersionId: string;
@@ -55,6 +57,12 @@ export async function exportProjectBundle(params: { projectId: string }) {
 
   const dbPath = await getDbPath();
   const dbBytes = await readFile(dbPath);
+  const provenance = await getRevisionLog(project.id);
+  const provenanceExport = {
+    schemaVersion: 1,
+    createdAt: nowIso(),
+    records: provenance.records,
+  };
 
   const manifest = {
     project: {
@@ -68,6 +76,7 @@ export async function exportProjectBundle(params: { projectId: string }) {
   const zip = new JSZip();
   zip.file("cadence.db", dbBytes);
   zip.file("manifest.json", JSON.stringify(manifest, null, 2));
+  zip.file("provenance.json", JSON.stringify(provenanceExport, null, 2));
 
   const bundle = await zip.generateAsync({ type: "uint8array" });
   const filePath = await save({

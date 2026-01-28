@@ -38,3 +38,8 @@ export async function updateProjectReadme(id: string, readme: string) {
   const db = await getDb();
   await db.execute("UPDATE project SET readme = ? WHERE id = ?", [readme, id]);
 }
+
+export async function updateProjectAIContext(id: string, aiContextJson: string) {
+  const db = await getDb();
+  await db.execute("UPDATE project SET ai_context_json = ? WHERE id = ?", [aiContextJson, id]);
+}
