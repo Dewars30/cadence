@@ -9,6 +9,7 @@ These rules are **repo law**. If any instruction conflicts with these rules, **f
 3. **Reproducible exports:** A saved run + inputs must reproduce the same export (within deterministic constraints).
    - DOCX exports must be byte-for-byte deterministic given identical ArtifactIR, template, and compiler version.
 4. **No scope creep in MVP:** No cloud sync. No PPTX/XLSX. No plugins/marketplace.
+5. **Stable IR IDs:** Existing block/section IDs MUST remain stable across all patch operations; IDs only change on creation/deletion.
 
 ## Engineering invariants
 1. Prefer **small PRs** (<= 400 LOC net change unless approved).
