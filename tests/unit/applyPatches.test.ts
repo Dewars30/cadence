@@ -82,4 +82,30 @@ describe("applyPatches", () => {
     ];
     expect(() => applyPatches(reportBasic, patches)).toThrow(/titlePage/);
   });
+
+  it("preserves existing block ids on insert and replace", () => {
+    const insertPatch = [
+      {
+        op: "insert_before",
+        target: { kind: "block", id: "block_003" },
+        values: [{ type: "paragraph", text: "Inserted." }],
+      },
+    ];
+    const inserted = applyPatches(reportBasic, insertPatch);
+    const originalIds = reportBasic.blocks.map((block) => block.id);
+    const stillPresent = inserted.blocks.filter((block) => originalIds.includes(block.id));
+    expect(stillPresent.map((block) => block.id)).toEqual(originalIds);
+
+    const replacePatch = [
+      {
+        op: "replace",
+        target: { kind: "block", id: "block_003" },
+        value: { type: "paragraph", text: "Replaced content." },
+      },
+    ];
+    const replaced = applyPatches(reportBasic, replacePatch);
+    const replacedBlock = replaced.blocks.find((block) => block.id === "block_003");
+    expect(replacedBlock?.id).toBe("block_003");
+    expect(replacedBlock?.type).toBe("paragraph");
+  });
 });

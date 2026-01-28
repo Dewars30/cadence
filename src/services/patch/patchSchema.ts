@@ -11,17 +11,48 @@ const targetSchema = {
     id: { type: "string" },
   },
 };
+const blockTargetSchema = {
+  type: "object",
+  required: ["kind", "id"],
+  additionalProperties: false,
+  properties: {
+    kind: { const: "block" },
+    id: { type: "string" },
+  },
+};
 
-const replaceSchema = {
+const sectionTargetSchema = {
+  type: "object",
+  required: ["kind", "id"],
+  additionalProperties: false,
+  properties: {
+    kind: { const: "section" },
+    id: { type: "string" },
+  },
+};
+
+const replaceBlockSchema = {
   type: "object",
   required: ["op", "target", "value"],
   additionalProperties: false,
   properties: {
     op: { const: "replace" },
-    target: targetSchema,
-    value: {},
+    target: blockTargetSchema,
+    value: { type: "object" },
   },
 };
+
+const replaceSectionSchema = {
+  type: "object",
+  required: ["op", "target", "value"],
+  additionalProperties: false,
+  properties: {
+    op: { const: "replace" },
+    target: sectionTargetSchema,
+    value: { type: "array", items: { type: "object" } },
+  },
+};
+
 
 const insertSchema = {
   type: "object",
@@ -30,7 +61,7 @@ const insertSchema = {
   properties: {
     op: { type: "string", enum: ["insert_before", "insert_after"] },
     target: targetSchema,
-    values: { type: "array" },
+    values: { type: "array", items: { type: "object" } },
   },
 };
 
@@ -45,7 +76,7 @@ const deleteSchema = {
 };
 
 const patchSchema = {
-  oneOf: [replaceSchema, insertSchema, deleteSchema],
+  oneOf: [replaceBlockSchema, replaceSectionSchema, insertSchema, deleteSchema],
 };
 
 const patchListSchema = {

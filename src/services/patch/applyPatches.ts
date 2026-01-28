@@ -122,8 +122,11 @@ export function applyPatches(ir: ArtifactIR, patches: IRPatch[]): ArtifactIR {
     if (patch.op === "replace") {
       if (patch.target.kind === "section") {
         const section = resolveSectionRange(blocks, patch.target.id);
-        const replacement = normalizeBlocks(patch.value, patchIndex, section.start, existingIds);
-        blocks.splice(section.start, section.end - section.start + 1, ...replacement);
+        if (!Array.isArray(patch.value)) {
+          throw new Error("Section replace expects value to be an array of body blocks.");
+        }
+        const replacement = normalizeBlocks(patch.value, patchIndex, section.start + 1, existingIds);
+        blocks.splice(section.start + 1, section.end - section.start, ...replacement);
         return;
       }
       const index = findBlockIndex(blocks, patch.target.id);
