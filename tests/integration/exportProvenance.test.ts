@@ -15,7 +15,12 @@ vi.mock("jszip", () => {
       return this;
     }
     async generateAsync() {
-      const payload = JSON.stringify(this.files);
+      const sorted = Object.fromEntries(
+        Object.keys(this.files)
+          .sort()
+          .map((key) => [key, this.files[key]]),
+      );
+      const payload = JSON.stringify(sorted);
       return new TextEncoder().encode(payload);
     }
   }
@@ -80,6 +85,8 @@ describe("exportProjectBundle provenance", () => {
 
     const firstRaw = firstBundle["provenance.json"];
     const secondRaw = secondBundle["provenance.json"];
+    expect(firstRaw).toBeDefined();
+    expect(secondRaw).toBeDefined();
 
     expect(typeof firstRaw).toBe("string");
     expect(firstRaw).toBe(secondRaw);
