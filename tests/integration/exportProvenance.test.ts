@@ -5,16 +5,23 @@ import { createProject } from "../../src/services/projectService";
 import { appendRevisionRecord, computeIRHash } from "../../src/services/revision/provenance";
 import reportBasic from "../../fixtures/ir/report_basic.json";
 
-const zipFiles: Record<string, unknown> = {};
+const writtenBundles: Uint8Array[] = [];
 
 vi.mock("jszip", () => {
   class JSZipMock {
+    private files: Record<string, unknown> = {};
     file(name: string, data: unknown) {
-      zipFiles[name] = data;
+      this.files[name] = data;
       return this;
     }
     async generateAsync() {
-      return new Uint8Array([1, 2, 3]);
+      const sorted = Object.fromEntries(
+        Object.keys(this.files)
+          .sort()
+          .map((key) => [key, this.files[key]]),
+      );
+      const payload = JSON.stringify(sorted);
+      return new TextEncoder().encode(payload);
     }
   }
   return { default: JSZipMock };
@@ -26,7 +33,9 @@ vi.mock("@tauri-apps/plugin-dialog", () => ({
 
 vi.mock("@tauri-apps/plugin-fs", () => ({
   readFile: vi.fn(async () => new Uint8Array([9, 9, 9])),
-  writeFile: vi.fn(async () => undefined),
+  writeFile: vi.fn(async (_path: string, data: Uint8Array) => {
+    writtenBundles.push(data);
+  }),
 }));
 
 vi.mock("../../src/services/db", async () => {
@@ -41,7 +50,7 @@ vi.mock("../../src/services/db", async () => {
 
 describe("exportProjectBundle provenance", () => {
   beforeEach(() => {
-    Object.keys(zipFiles).forEach((key) => delete zipFiles[key]);
+    writtenBundles.length = 0;
   });
 
   it("includes provenance.json in the zip bundle", async () => {
@@ -65,17 +74,27 @@ describe("exportProjectBundle provenance", () => {
     });
 
     await exportProjectBundle({ projectId: project.id });
-    expect(Object.keys(zipFiles)).toContain("provenance.json");
-    const firstRaw = zipFiles["provenance.json"];
-    const firstParsed =
-      typeof firstRaw === "string" ? JSON.parse(firstRaw) : JSON.parse(String(firstRaw));
+    await exportProjectBundle({ projectId: project.id });
+
+    expect(writtenBundles.length).toBe(2);
+    const decode = (bytes: Uint8Array) =>
+      JSON.parse(new TextDecoder().decode(bytes)) as Record<string, unknown>;
+
+    const firstBundle = decode(writtenBundles[0]);
+    const secondBundle = decode(writtenBundles[1]);
+
+    const firstRaw = firstBundle["provenance.json"];
+    const secondRaw = secondBundle["provenance.json"];
+    expect(firstRaw).toBeDefined();
+    expect(secondRaw).toBeDefined();
+
+    expect(typeof firstRaw).toBe("string");
+    expect(firstRaw).toBe(secondRaw);
+
+    const firstParsed = JSON.parse(firstRaw as string);
     expect(firstParsed.schemaVersion).toBe(1);
     expect(firstParsed.createdAt).toBe(timestamp);
     expect(Array.isArray(firstParsed.records)).toBe(true);
     expect(firstParsed.records.length).toBe(1);
-
-    await exportProjectBundle({ projectId: project.id });
-    const secondRaw = zipFiles["provenance.json"];
-    expect(secondRaw).toBe(firstRaw);
   });
 });
