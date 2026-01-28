@@ -49,9 +49,10 @@ describe("exportProjectBundle provenance", () => {
     const workspace = await createWorkspace("Export WS");
     const project = await createProject(workspace.id, "Export Project");
     const hash = await computeIRHash(reportBasic);
+    const timestamp = "2020-01-01T00:00:00.000Z";
     await appendRevisionRecord(project.id, {
       revisionId: "rev_export_1",
-      timestamp: new Date().toISOString(),
+      timestamp,
       mode: "patch",
       target: { kind: "block", id: "block_003" },
       instruction: "Export test",
@@ -65,11 +66,16 @@ describe("exportProjectBundle provenance", () => {
 
     await exportProjectBundle({ projectId: project.id });
     expect(Object.keys(zipFiles)).toContain("provenance.json");
-    const raw = zipFiles["provenance.json"];
-    const parsed = typeof raw === "string" ? JSON.parse(raw) : JSON.parse(String(raw));
-    expect(parsed.schemaVersion).toBe(1);
-    expect(typeof parsed.createdAt).toBe("string");
-    expect(Array.isArray(parsed.records)).toBe(true);
-    expect(parsed.records.length).toBe(1);
+    const firstRaw = zipFiles["provenance.json"];
+    const firstParsed =
+      typeof firstRaw === "string" ? JSON.parse(firstRaw) : JSON.parse(String(firstRaw));
+    expect(firstParsed.schemaVersion).toBe(1);
+    expect(firstParsed.createdAt).toBe(timestamp);
+    expect(Array.isArray(firstParsed.records)).toBe(true);
+    expect(firstParsed.records.length).toBe(1);
+
+    await exportProjectBundle({ projectId: project.id });
+    const secondRaw = zipFiles["provenance.json"];
+    expect(secondRaw).toBe(firstRaw);
   });
 });

@@ -9,7 +9,7 @@ import { getProject } from "./projectService";
 import { validateOrRepairArtifactIR } from "./artifactIRService";
 import { getProviderBundle } from "./llm/registry";
 import { getRevisionLog } from "./revision/provenance";
-import { nowIso } from "./utils";
+const PROVENANCE_EPOCH = "2000-01-01T00:00:00.000Z";
 
 export async function exportArtifactVersionToDocx(params: {
   artifactVersionId: string;
@@ -58,9 +58,11 @@ export async function exportProjectBundle(params: { projectId: string }) {
   const dbPath = await getDbPath();
   const dbBytes = await readFile(dbPath);
   const provenance = await getRevisionLog(project.id);
+  const createdAt =
+    provenance.records.length > 0 ? provenance.records[0].timestamp : PROVENANCE_EPOCH;
   const provenanceExport = {
     schemaVersion: 1,
-    createdAt: nowIso(),
+    createdAt,
     records: provenance.records,
   };
 
