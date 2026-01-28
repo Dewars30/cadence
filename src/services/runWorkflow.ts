@@ -2,6 +2,7 @@ import { WorkflowPhase, isFinalPhase, nextPhase } from "../domain/phase";
 import { buildRunContext } from "./contextBuilder";
 import type { LLMProvider } from "./llmProvider";
 import { addRunStep, createRun, getRun, listRunSteps, setRunStatus, updateRunPhase } from "./runService";
+import { reviseWithPatches } from "./workflow/phases/reviseWithPatches";
 
 type RunStartParams = {
   projectId: string;
@@ -84,4 +85,8 @@ export async function pauseRun(runId: string) {
   if (!run) throw new Error("Run not found.");
   await setRunStatus(run.id, "paused");
   return { ...run, status: "paused" };
+}
+
+export async function reviseArtifactWithPatches(params: Parameters<typeof reviseWithPatches>[0]) {
+  return reviseWithPatches(params);
 }

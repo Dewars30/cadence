@@ -6,9 +6,10 @@
     "template": "consulting_report_v1"
   },
   "blocks": [
-    { "type": "titlePage", "title": "Cadence Metrics", "subtitle": "Table Heavy" },
-    { "type": "heading", "level": 1, "text": "Metrics" },
+    { "id": "block_001", "type": "titlePage", "title": "Cadence Metrics", "subtitle": "Table Heavy" },
+    { "id": "block_002", "type": "heading", "level": 1, "text": "Metrics" },
     {
+      "id": "block_003",
       "type": "table",
       "columns": ["Metric", "Target", "Status"],
       "rows": [

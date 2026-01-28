@@ -1,0 +1,9 @@
+{
+  "patches": [
+    {
+      "op": "replace",
+      "target": { "kind": "block", "id": "block_003" },
+      "value": { "id": "block_003", "type": "paragraph", "text": "Revised via patch fixture." }
+    }
+  ]
+}

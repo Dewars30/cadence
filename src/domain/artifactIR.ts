@@ -19,14 +19,18 @@ export type ArtifactIR = {
   styles?: Record<string, unknown>;
 };
 
+type BaseBlock = {
+  id: string;
+};
+
 export type ArtifactBlock =
-  | { type: "titlePage"; title: string; subtitle?: string }
-  | { type: "heading"; level: number; text: string }
-  | { type: "paragraph"; text: string }
-  | { type: "bullets"; items: string[] }
-  | { type: "numbered"; items: string[] }
-  | { type: "table"; columns: string[]; rows: string[][] }
-  | { type: "pageBreak" };
+  | (BaseBlock & { type: "titlePage"; title: string; subtitle?: string })
+  | (BaseBlock & { type: "heading"; level: number; text: string })
+  | (BaseBlock & { type: "paragraph"; text: string })
+  | (BaseBlock & { type: "bullets"; items: string[] })
+  | (BaseBlock & { type: "numbered"; items: string[] })
+  | (BaseBlock & { type: "table"; columns: string[]; rows: string[][] })
+  | (BaseBlock & { type: "pageBreak" });
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 addFormats(ajv);
