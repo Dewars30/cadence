@@ -117,7 +117,9 @@ function getProviderModel(provider: LLMProvider, fallback?: string | null) {
 }
 
 export async function reviseArtifactWithPatches(params: ReviseArtifactParams) {
-  const { mode, sanitizedInstruction, warnings } = parseRegenTokens(params.instruction);
+  const { mode, sanitizedInstruction, warnings, allowHeadingRenames } = parseRegenTokens(
+    params.instruction,
+  );
   warnings.forEach((warning) => console.warn(`[Cadence] ${warning}`));
 
   const irHashBefore = await computeIRHash(params.ir);
@@ -135,7 +137,12 @@ export async function reviseArtifactWithPatches(params: ReviseArtifactParams) {
       provider: params.provider,
       repairProvider: params.repairProvider,
       revisionMode: mode,
+      allowHeadingRenames,
     });
+    const boundedHeadingRenames =
+      result.headingRenames && result.headingRenames.length > 0
+        ? result.headingRenames.slice(0, 20)
+        : undefined;
     const irHashAfter = await computeIRHash(result.ir);
     const validation = result.repaired || result.outlineRepaired ? "repaired" : "passed";
     record = {
@@ -148,6 +155,7 @@ export async function reviseArtifactWithPatches(params: ReviseArtifactParams) {
       model: providerModel,
       patchCount: result.patches.length,
       validation,
+      headingRenames: boundedHeadingRenames,
       irHashBefore,
       irHashAfter,
     };

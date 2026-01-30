@@ -1,6 +1,12 @@
 export type IRTarget =
   | { kind: "section"; id: string }
   | { kind: "block"; id: string };
+export type RenameHeadingPatch = {
+  op: "rename_heading";
+  target: { kind: "section"; id: string };
+  newText: string;
+  expectedText?: string;
+};
 
 export type IRPatch =
   | {
@@ -16,4 +22,5 @@ export type IRPatch =
   | {
       op: "delete";
       target: IRTarget;
-    };
+    }
+  | RenameHeadingPatch;
