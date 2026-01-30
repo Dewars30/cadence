@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { parseRegenTokens } from "../../src/services/revision/regenTokens";
-import { TOKEN_ALLOW_REFLOW, TOKEN_FULL_REGENERATE } from "../../src/services/revision/constants";
+import {
+  TOKEN_ALLOW_HEADING_RENAMES,
+  TOKEN_ALLOW_REFLOW,
+  TOKEN_FULL_REGENERATE,
+} from "../../src/services/revision/constants";
 
 describe("regen token parsing", () => {
   it("defaults to patch mode with no tokens", () => {
@@ -35,5 +39,11 @@ describe("regen token parsing", () => {
     const result = parseRegenTokens("Please redo [[full_regenerate]]");
     expect(result.mode).toBe("patch");
     expect(result.warnings).toEqual([]);
+  });
+
+  it("parses ALLOW_HEADING_RENAMES and strips the token", () => {
+    const result = parseRegenTokens(`Rename this ${TOKEN_ALLOW_HEADING_RENAMES}`);
+    expect(result.allowHeadingRenames).toBe(true);
+    expect(result.sanitizedInstruction).toBe("Rename this");
   });
 });

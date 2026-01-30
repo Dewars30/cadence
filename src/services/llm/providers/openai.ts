@@ -46,7 +46,7 @@ export class OpenAILLMProvider implements LLMProvider {
     if (isRevision) {
       const completion = await this.client.chat.completions.create({
         model: this.model,
-        temperature: 0,
+        temperature: req.temperature ?? 0,
         messages: [
           {
             role: "developer",
@@ -81,7 +81,7 @@ export class OpenAILLMProvider implements LLMProvider {
       if (strictCompatible) {
         const completion = await this.client.chat.completions.create({
           model: this.model,
-          temperature: 0,
+          temperature: req.temperature ?? 0,
           messages: [
             {
               role: "developer",
@@ -142,7 +142,7 @@ export class OpenAILLMProvider implements LLMProvider {
 
       const completion = await this.client.chat.completions.create({
         model: this.model,
-        temperature: 0,
+        temperature: req.temperature ?? 0,
         messages: baseMessages,
         response_format: { type: "json_object" },
       });
@@ -173,7 +173,7 @@ export class OpenAILLMProvider implements LLMProvider {
 
       const retry = await this.client.chat.completions.create({
         model: this.model,
-        temperature: 0,
+        temperature: req.temperature ?? 0,
         messages: retryMessages,
         response_format: { type: "json_object" },
       });
@@ -192,6 +192,7 @@ export class OpenAILLMProvider implements LLMProvider {
     // Non-IR phases: keep it simple, still require valid JSON.
     const completion = await this.client.chat.completions.create({
       model: this.model,
+      ...(typeof req.temperature === "number" ? { temperature: req.temperature } : {}),
       messages: [
         {
           role: "developer",

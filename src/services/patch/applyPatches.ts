@@ -3,6 +3,7 @@ import type { IRPatch, IRTarget } from "../../domain/irPatch";
 import { validateIRPatches } from "./patchSchema";
 
 type SectionRange = { start: number; end: number; heading: ArtifactBlock & { type: "heading" } };
+const MAX_HEADING_TEXT_LENGTH = 140;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -10,6 +11,14 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function stableBlockId(index: number) {
   return `block_${String(index).padStart(3, "0")}`;
+}
+function normalizeHeadingText(text: string) {
+  const trimmed = text.trim();
+  if (!trimmed) throw new Error("Heading rename requires non-empty text.");
+  if (trimmed.length > MAX_HEADING_TEXT_LENGTH) {
+    throw new Error(`Heading text exceeds ${MAX_HEADING_TEXT_LENGTH} characters.`);
+  }
+  return trimmed;
 }
 
 function ensureBlockIds(ir: ArtifactIR): ArtifactIR {
@@ -119,6 +128,22 @@ export function applyPatches(ir: ArtifactIR, patches: IRPatch[]): ArtifactIR {
   const existingIds = new Set(blocks.map((block) => block.id));
 
   patches.forEach((patch, patchIndex) => {
+    if (patch.op === "rename_heading") {
+      const index = findBlockIndex(blocks, patch.target.id);
+      const target = blocks[index];
+      if (target.type !== "heading") {
+        throw new Error(`Rename target must reference a heading block id: ${patch.target.id}`);
+      }
+      if (patch.expectedText && patch.expectedText !== target.text) {
+        throw new Error(
+          `Heading rename expected text mismatch for ${patch.target.id}: ` +
+            `expected "${patch.expectedText}", got "${target.text}".`,
+        );
+      }
+      const text = normalizeHeadingText(patch.newText);
+      blocks[index] = { ...target, text };
+      return;
+    }
     if (patch.op === "replace") {
       if (patch.target.kind === "section") {
         const section = resolveSectionRange(blocks, patch.target.id);

@@ -1,6 +1,8 @@
 import type { ArtifactIR, ArtifactBlock } from "../../domain/artifactIR";
 
 type HeadingSnapshot = { id: string; level: number; text: string };
+type AllowedRename = { from: string; to: string };
+type OutlineValidationOptions = { allowedRenames?: Map<string, AllowedRename> };
 
 function extractHeadings(ir: ArtifactIR): HeadingSnapshot[] {
   return ir.blocks
@@ -11,6 +13,7 @@ function extractHeadings(ir: ArtifactIR): HeadingSnapshot[] {
 export function validateOutlineInvariants(
   original: ArtifactIR,
   generated: ArtifactIR,
+  options: OutlineValidationOptions = {},
 ): { valid: boolean; violations: string[] } {
   const originalHeadings = extractHeadings(original);
   const generatedHeadings = extractHeadings(generated);
@@ -33,7 +36,12 @@ export function validateOutlineInvariants(
       violations.push(`Heading ${i + 1} level changed from ${before.level} to ${after.level}.`);
     }
     if (before.text !== after.text) {
-      violations.push(`Heading ${i + 1} text changed from "${before.text}" to "${after.text}".`);
+      const allowed = options.allowedRenames?.get(before.id);
+      const isAllowed =
+        allowed && allowed.from === before.text && allowed.to === after.text;
+      if (!isAllowed) {
+        violations.push(`Heading ${i + 1} text changed from "${before.text}" to "${after.text}".`);
+      }
     }
   }
 

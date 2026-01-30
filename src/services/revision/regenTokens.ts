@@ -1,22 +1,25 @@
-import { TOKEN_ALLOW_REFLOW, TOKEN_FULL_REGENERATE } from "./constants";
+import { TOKEN_ALLOW_HEADING_RENAMES, TOKEN_ALLOW_REFLOW, TOKEN_FULL_REGENERATE } from "./constants";
 import type { RevisionMode } from "../../domain/revisionLog";
 
 export type RegenTokenParseResult = {
   mode: RevisionMode;
   sanitizedInstruction: string;
   warnings: string[];
+  allowHeadingRenames: boolean;
 };
 
 function stripTokens(instruction: string) {
   const stripped = instruction
     .replaceAll(TOKEN_FULL_REGENERATE, "")
-    .replaceAll(TOKEN_ALLOW_REFLOW, "");
+    .replaceAll(TOKEN_ALLOW_REFLOW, "")
+    .replaceAll(TOKEN_ALLOW_HEADING_RENAMES, "");
   return stripped.trim();
 }
 
 export function parseRegenTokens(instruction: string): RegenTokenParseResult {
   const hasFull = instruction.includes(TOKEN_FULL_REGENERATE);
   const hasAllow = instruction.includes(TOKEN_ALLOW_REFLOW);
+  const hasHeadingRenames = instruction.includes(TOKEN_ALLOW_HEADING_RENAMES);
   const warnings: string[] = [];
 
   let mode: RevisionMode = "patch";
@@ -32,5 +35,6 @@ export function parseRegenTokens(instruction: string): RegenTokenParseResult {
     mode,
     sanitizedInstruction: stripTokens(instruction),
     warnings,
+    allowHeadingRenames: hasHeadingRenames,
   };
 }

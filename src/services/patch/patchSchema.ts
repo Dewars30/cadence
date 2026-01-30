@@ -74,9 +74,20 @@ const deleteSchema = {
     target: targetSchema,
   },
 };
+const renameHeadingSchema = {
+  type: "object",
+  required: ["op", "target", "newText"],
+  additionalProperties: false,
+  properties: {
+    op: { const: "rename_heading" },
+    target: sectionTargetSchema,
+    newText: { type: "string", minLength: 1, maxLength: 140 },
+    expectedText: { type: "string", minLength: 1 },
+  },
+};
 
 const patchSchema = {
-  oneOf: [replaceBlockSchema, replaceSectionSchema, insertSchema, deleteSchema],
+  oneOf: [replaceBlockSchema, replaceSectionSchema, insertSchema, deleteSchema, renameHeadingSchema],
 };
 
 const patchListSchema = {

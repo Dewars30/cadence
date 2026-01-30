@@ -34,6 +34,7 @@ export class AnthropicLLMProvider implements LLMProvider {
       const msg = await this.client.messages.create({
         model: this.model,
         max_tokens: 2048,
+        ...(typeof req.temperature === "number" ? { temperature: req.temperature } : {}),
         system:
           "You generate IR patches for Cadence. Output ONLY valid JSON with shape: { patches: IRPatch[] }. No prose. No markdown.",
         messages: [
@@ -54,6 +55,7 @@ export class AnthropicLLMProvider implements LLMProvider {
       const msg = await this.client.messages.create({
         model: this.model,
         max_tokens: 4096,
+        ...(typeof req.temperature === "number" ? { temperature: req.temperature } : {}),
         system:
           "You are Cadence's document generator. Use the provided tool to emit ONLY the ArtifactIR object matching the schema. Do not add any extra fields.",
         messages: [
@@ -92,6 +94,7 @@ export class AnthropicLLMProvider implements LLMProvider {
     const msg = await this.client.messages.create({
       model: this.model,
       max_tokens: 2048,
+      ...(typeof req.temperature === "number" ? { temperature: req.temperature } : {}),
       system:
         "You are Cadence's workflow engine. Output ONLY valid JSON. No prose. Include fields: phase, summary, bullets (string[]), risks (string[]), next_steps (string[]).",
       messages: [

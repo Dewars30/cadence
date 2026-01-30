@@ -3,6 +3,7 @@ import type { IRTarget } from "./irPatch";
 export type RevisionMode = "patch" | "full_regen_locked_outline" | "full_regen_allow_reflow";
 
 export type RevisionProvider = "mock" | "openai" | "anthropic";
+export type HeadingRename = { id: string; from: string; to: string };
 
 export type RevisionRecord = {
   revisionId: string;
@@ -14,6 +15,7 @@ export type RevisionRecord = {
   model: string | null;
   patchCount: number;
   validation: "passed" | "repaired" | "failed";
+  headingRenames?: HeadingRename[];
   errors?: string[];
   irHashBefore: string;
   irHashAfter: string;

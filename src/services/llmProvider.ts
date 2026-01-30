@@ -9,6 +9,7 @@ export type GenerateRequest = {
   prompt: string;
   context: RunContext;
   history: RunStep[];
+  temperature?: number;
 };
 
 export type LLMResponse = {
